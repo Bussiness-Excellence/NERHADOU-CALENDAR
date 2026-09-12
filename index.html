@@ -264,11 +264,8 @@ select.inp{cursor:pointer;appearance:none;
 }
 .mem:hover{background:var(--surf-3)}
 .mem.on{background:var(--surf-3)}
-.memtxt{flex:1;min-width:0}
-.mem .nm{font-size:12.5px;color:var(--t2);overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap;display:block}
-.mem .sub{display:block;font-size:10.5px;color:var(--tm);overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap;line-height:1.35}
+.mem .nm{flex:1;font-size:12.5px;color:var(--t2);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
 .mem.on .nm{color:var(--t1);font-weight:600}
 .mem .star{font-size:13px;color:var(--brand-400)}
 .side-empty{padding:14px 10px;font-size:12.5px;color:var(--tm);line-height:1.5}
@@ -461,22 +458,6 @@ select.inp{cursor:pointer;appearance:none;
 .uname .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .uname .em{font-size:11.5px;color:var(--tm);overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap}
-.uname .sub{font-size:11.5px;color:var(--brand);font-weight:600;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
-.tip .tsub{font-size:11px;color:var(--brand);font-weight:600;margin:-4px 0 6px}
-
-/* import list */
-.imp-row{display:flex;align-items:center;gap:9px;padding:7px 9px;
-  border-bottom:1px solid var(--bd);font-size:12.5px}
-.imp-row:last-child{border-bottom:0}
-.imp-row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.imp-row .nm b{font-weight:600}
-.imp-row .nm span{color:var(--tm);font-size:11.5px;display:block}
-.imp-st{flex:none;font-size:11.5px;font-weight:600;color:var(--tm);
-  min-width:78px;text-align:right}
-.imp-st.ok{color:var(--ok)} .imp-st.skip{color:var(--warn)} .imp-st.bad{color:var(--bad)}
-.imp-bar{height:5px;border-radius:3px;background:var(--surf-3);overflow:hidden;margin-bottom:12px}
-.imp-bar i{display:block;height:100%;background:var(--brand);width:0;transition:width .2s}
 .uacts{display:flex;gap:4px;justify-content:flex-end}
 .inactive td{opacity:.5}
 
@@ -713,7 +694,7 @@ select.inp{cursor:pointer;appearance:none;
       <div id="pwMsg"></div>
       <label class="field"><span>New password</span>
         <input id="pw1" class="inp" type="password" autocomplete="new-password"
-               placeholder="At least 6 characters"></label>
+               placeholder="At least 8 characters"></label>
       <label class="field"><span>Type it again</span>
         <input id="pw2" class="inp" type="password" autocomplete="new-password"></label>
     </div>
@@ -749,12 +730,10 @@ select.inp{cursor:pointer;appearance:none;
       <h2>People</h2>
       <span class="badge plain" id="admCount">0</span>
       <div class="spacer" style="flex:1"></div>
-      <button class="btn btn-sm" id="admImport"><i class="ti ti-users-plus"></i> Import team</button>
       <button class="btn btn-pri btn-sm" id="admNew"><i class="ti ti-user-plus"></i> Add person</button>
       <button class="icon-btn" data-close="admScrim"><i class="ti ti-x"></i></button>
     </div>
     <div class="modal-b" style="padding-top:12px">
-      <div id="admWarn"></div>
       <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
         <input id="admSearch" class="inp" placeholder="Search name or email" style="flex:1;min-width:180px">
         <select id="admFilter" class="inp" style="width:160px"></select>
@@ -777,11 +756,10 @@ select.inp{cursor:pointer;appearance:none;
         <input id="uEmail" class="inp" type="email" placeholder="ahmed.hassan@nerhadou.com"></label>
       <div class="field" id="uPassField"><span>Temporary password</span>
         <div style="display:flex;gap:7px">
-          <input id="uPass" class="inp" style="flex:1" placeholder="At least 6 characters">
+          <input id="uPass" class="inp" style="flex:1" placeholder="At least 8 characters">
           <button class="btn" id="uGen" type="button"><i class="ti ti-refresh"></i> Generate</button>
         </div>
-        <p class="hint">They must change this the first time they sign in. Generate a unique one
-          instead if the account will sit unused for a while.</p>
+        <p class="hint">They'll be asked to change it the first time they sign in.</p>
       </div>
       <div class="row-2">
         <label class="field"><span>Role</span><select id="uRole" class="inp">
@@ -792,40 +770,14 @@ select.inp{cursor:pointer;appearance:none;
         <label class="field"><span>Group</span><select id="uGroup" class="inp"></select></label>
       </div>
       <div class="row-2">
-        <label class="field"><span>Job title</span><input id="uJob" class="inp" placeholder="PM, GPM, Associate PM…"></label>
+        <label class="field"><span>Job title</span><input id="uJob" class="inp" placeholder="Optional"></label>
         <label class="field"><span>Employee ID</span><input id="uEmp" class="inp" placeholder="Optional"></label>
       </div>
-      <label class="field"><span>Brands</span>
-        <input id="uBrands" class="inp" placeholder="FERROTRON / FERROTRON FORTE">
-        <p class="hint">Shown under their name across the calendar. Separate several with a slash.</p></label>
       <div id="uCred" class="credbox hide"></div>
     </div>
     <div class="modal-f"><div class="spacer"></div>
       <button class="btn" data-close="uScrim">Cancel</button>
       <button class="btn btn-pri" id="uSave">Create person</button></div>
-  </div>
-</div>
-
-<!-- ================= IMPORT TEAM ================= -->
-<div class="scrim hide" id="impScrim">
-  <div class="modal wide">
-    <div class="modal-h"><h2 id="impTitle">Import the marketing team</h2>
-      <span class="badge plain" id="impCount"></span>
-      <div class="spacer" style="flex:1"></div>
-      <button class="icon-btn" data-close="impScrim"><i class="ti ti-x"></i></button></div>
-    <div class="modal-b">
-      <p class="hint" id="impIntro" style="margin:-4px 0 13px"></p>
-      <div id="impMsg"></div>
-      <div class="imp-bar hide" id="impBar"><i></i></div>
-      <div id="impList" style="border:1px solid var(--bd);border-radius:var(--r);overflow:hidden"></div>
-      <div id="impCreds"></div>
-    </div>
-    <div class="modal-f">
-      <button class="btn hide" id="impCsv"><i class="ti ti-download"></i> Download passwords</button>
-      <div class="spacer"></div>
-      <button class="btn" data-close="impScrim">Close</button>
-      <button class="btn btn-pri" id="impRun">Create accounts</button>
-    </div>
   </div>
 </div>
 
@@ -839,7 +791,7 @@ select.inp{cursor:pointer;appearance:none;
       <div id="rpMsg"></div>
       <div class="field"><span>New temporary password</span>
         <div style="display:flex;gap:7px">
-          <input id="rpPass" class="inp" style="flex:1" placeholder="At least 6 characters">
+          <input id="rpPass" class="inp" style="flex:1" placeholder="At least 8 characters">
           <button class="btn" id="rpGen" type="button"><i class="ti ti-refresh"></i> Generate</button>
         </div>
       </div>
@@ -876,42 +828,6 @@ const GROUP_IDS = {
   g3:'c1000000-0000-0000-0000-000000000003',
   g4:'c1000000-0000-0000-0000-000000000004',
 };
-/* The marketing team, from the org sheet. First three are super admins;
-   each group's manager is listed first. Used by the one-click importer in
-   Manage people. Safe to leave here — it holds no passwords. */
-const ROSTER = [
-  {n:"Dr. Reham Shalaby", e:"reham_shalaby@nerhadou.com", t:"CMO", r:"super_admin", g:null},
-  {n:"Ahmed Ezz", e:"ahmed.ezz@nerhadou.com", t:"Marketing Director", r:"super_admin", g:null},
-  {n:"Hosam Gamal", e:"hossam_gamal@nerhadou.com", t:"Marketing Manager", r:"super_admin", g:null},
-  {n:"Ahmed Abdelgawad", e:"ahmed_abdelgawad@nerhadou.com", t:"Senior GPM", r:"group_admin", g:"g1"},
-  {n:"Rasha Samy", e:"rasha.samy@nerhadou.com", t:"PM", b:"OCTATRON", r:"user", g:"g1"},
-  {n:"Amira Elsayed", e:"amira.elsayed@nerhadou.com", t:"Associate PM", b:"Trib Gold / ZINCTRON", r:"user", g:"g1"},
-  {n:"Mohamed Dadamouny", e:"mohamed_dadamouny@nerhadou.com", t:"Senior PM", b:"TADANERFI / NERHASILDA", r:"user", g:"g1"},
-  {n:"Zeyad Saad", e:"zeyad.saad@nerhadou.com", t:"Associate PM", b:"HIPOTENCY / NERCAFIX", r:"user", g:"g1"},
-  {n:"Nadeen Kamel", e:"nadeen.kamel@nerhadou.com", t:"Associate PM", b:"NERKARDOU", r:"user", g:"g1"},
-  {n:"Hassan Essam", e:"hassan.essam@nerhadou.com", t:"Associate PM", b:"MELACRYST", r:"user", g:"g1"},
-  {n:"Reham Mostafa", e:"reham_mostafa@nerhadou.com", t:"GPM", r:"group_admin", g:"g2"},
-  {n:"Nourhan Nabil", e:"nourhan_nabil@nerhadou.com", t:"PM", b:"METHYLTECHNO", r:"user", g:"g2"},
-  {n:"Mohamed Hany", e:"mohamed.hany@nerhadou.com", t:"Assistant PM", b:"VITA D3 / ZOLMSOLAN / NERHAPEZIL", r:"user", g:"g2"},
-  {n:"Diaa Ashraf", e:"diaa.ashraf@nerhadou.com", t:"Associate PM", b:"TECHNO B-COMPLEX", r:"user", g:"g2"},
-  {n:"Islam Zahran", e:"islam.zahran@nerhadou.com", t:"GPM", r:"group_admin", g:"g3"},
-  {n:"Feby Abdallah", e:"feby_abdallah@nerhadou.com", t:"Senior PM", b:"VITATRON / CHROMITRON", r:"user", g:"g3"},
-  {n:"Mahmoud Hassan", e:"mahmoud.hassan@nerhadou.com", t:"PM", b:"CALCITRON", r:"user", g:"g3"},
-  {n:"Ahmed Talaat", e:"ahmed.talaat@nerhadou.com", t:"PM", b:"FERROTRON / FERROTRON FORTE", r:"user", g:"g3"},
-  {n:"Basem Fathy", e:"basem_fathy@nerhadou.com", t:"Senior GPM", r:"group_admin", g:"g4"},
-  {n:"Mohamed Nessim", e:"mohamed_nessim@nerhadou.com", t:"senior PM", b:"NERHAFLUKS", r:"user", g:"g4"},
-  {n:"Ahmed Abdelmoneim", e:"ahmed.abdelmoneim@nerhadou.com", t:"Associate PM", b:"SPASULANCE / LOPRANEST", r:"user", g:"g4"},
-  {n:"Ali Ashour", e:"ali.ashour@nerhadou.com", t:"PM", b:"ONDALENZ 8 mg / MECLIZIGO", r:"user", g:"g4"},
-  {n:"Amir Rezk", e:"amir.rezk@nerhadou.com", t:"Associate PM", b:"NOPYRETRON", r:"user", g:"g4"},
-  {n:"Sherry Boushra", e:"sherry_boushra@nerhadou.com", t:"Senior PM", b:"ONDALENZ 4 mg", r:"user", g:"g4"},
-];
-
-/* Everyone starts on this and is forced to change it at first sign-in.
-   Until they do, the account is guessable — Manage people flags who is
-   still on it so they can be chased. */
-const DEFAULT_PASSWORD = '123456';
-const MIN_PASSWORD = 6;
-
 const ROLE_LABEL = { super_admin:'Super admin', group_admin:'Group manager', user:'Marketer' };
 const VIS_LABEL  = { private:'Just me', group:'My group', company:'Everyone' };
 const EVT_HEX = ['#0B4D89','#0EA5A4','#6366F1','#C2417E','#E8853A',
@@ -953,9 +869,6 @@ function initialsOf(n){
   return ((p[0]?.[0]||'')+(p[1]?.[0]||'')).toUpperCase()||'··';
 }
 function groupOf(slug){ return GROUPS.find(g=>g.slug===slug); }
-/* Brands are what people actually recognise each other by; fall back to
-   the job title for managers and directors who don't own a brand. */
-function subOf(u){ return (u?.brands || u?.title || '').trim(); }
 function groupColor(slug){ return groupOf(slug)?.color || 'var(--tm)'; }
 function groupName(slug){ return groupOf(slug)?.name || '—'; }
 
@@ -1128,17 +1041,14 @@ function renderSidebar(){
         <span class="grp-ct">${online?online+'/':''}${members.length}</span>
       </button>
       <div class="grp-members">
-        ${members.length ? members.map(u=>{ const sub=subOf(u); return `
+        ${members.length ? members.map(u=>`
           <button class="mem ${filterUser===u.id?'on':''}" data-mem="${u.id}">
             <span class="avatar" style="background:${g.color};width:21px;height:21px;font-size:9px"
                   >${esc(u.initials||initialsOf(u.full_name))}</span>
-            <span class="memtxt">
-              <span class="nm">${esc(u.full_name||u.email)}</span>
-              ${sub?`<span class="sub">${esc(sub)}</span>`:''}
-            </span>
+            <span class="nm">${esc(u.full_name||u.email)}</span>
             ${u.role==='group_admin'?'<i class="ti ti-star-filled star"></i>':''}
             ${onlineSet.has(u.email)?'<span class="gdot" style="background:#22C55E"></span>':''}
-          </button>`; }).join('')
+          </button>`).join('')
           : '<div class="side-empty">Nobody here yet.</div>'}
       </div>
     </div>`;
@@ -1407,7 +1317,6 @@ function showTip(uid, anchor){
     const r=anchor.getBoundingClientRect();
     const t=$('#tip');
     t.innerHTML=`<div class="th">${esc(u.full_name||u.email)}</div>
-      ${subOf(u)?`<div class="tsub">${esc(subOf(u))}</div>`:''}
       ${next.length?next.map(e=>{const d=parseDate(e.date);
         return `<div class="tr"><span class="dt2">${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}</span>
         <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.title)}</span></div>`;
@@ -1558,7 +1467,7 @@ async function sendBack(){
    ==================================================================== */
 function forcePasswordChange(){
   $('#pwTitle').textContent='Choose a password';
-  $('#pwIntro').textContent='You are signed in with the shared starting password. Pick your own before you carry on — until you do, anyone could sign in as you.';
+  $('#pwIntro').textContent='You are signed in with a temporary password. Pick your own before you carry on.';
   $('#pwClose').classList.add('hide');
   $('#pwCancel').classList.add('hide');
   note('#pwMsg',''); $('#pw1').value=''; $('#pw2').value='';
@@ -1574,8 +1483,7 @@ function openPasswordChange(){
 }
 async function savePassword(){
   const a=$('#pw1').value, b=$('#pw2').value;
-  if(a.length<MIN_PASSWORD){ note('#pwMsg',`Use at least ${MIN_PASSWORD} characters.`); return; }
-  if(a===DEFAULT_PASSWORD){ note('#pwMsg','That is the shared starting password. Choose something only you know.'); return; }
+  if(a.length<8){ note('#pwMsg','Use at least 8 characters.'); return; }
   if(a!==b){ note('#pwMsg','The two passwords don\'t match.'); return; }
   $('#pwSave').disabled=true;
   const { error } = await sb.auth.updateUser({ password:a });
@@ -1609,7 +1517,6 @@ function openAdmin(){
   $('#admSearch').value='';
   $('#admFilter').innerHTML=`<option value="all">Everyone</option>`+
     GROUPS.map(g=>`<option value="${g.slug}">${esc(g.name)}</option>`).join('')+
-    `<option value="default">Still on the shared password</option>`+
     `<option value="inactive">Deactivated</option>`;
   renderAdmin();
   open$('#admScrim');
@@ -1622,26 +1529,12 @@ function renderAdmin(){
     list=list.filter(u=>u.is_active!==false);
     if(admFilter!=='all') list=list.filter(u=>u.group_slug===admFilter);
   }
-  if(admFilter==='default') list=USERS.filter(u=>u.is_active!==false && u.must_change_password);
   if(admQuery){
     const q=admQuery.toLowerCase();
     list=list.filter(u=>(u.full_name||'').toLowerCase().includes(q)
                      || (u.email||'').toLowerCase().includes(q));
   }
   $('#admCount').textContent=list.length;
-
-  // Accounts still on the shared password are the ones anyone could guess.
-  const open_=USERS.filter(u=>u.is_active!==false && u.must_change_password);
-  $('#admWarn').innerHTML = open_.length
-    ? `<div class="msg err" style="display:flex;align-items:center;gap:9px">
-         <i class="ti ti-alert-triangle" style="font-size:17px;flex:none"></i>
-         <span style="flex:1"><b>${open_.length} ${open_.length===1?'account is':'accounts are'} still on ${DEFAULT_PASSWORD}.</b>
-         Anyone who guesses the email can sign in as them. Chase them to sign in and set their own.</span>
-         <button class="btn btn-sm" id="admShowOpen">Show them</button>
-       </div>`
-    : `<div class="msg good">Everyone has set their own password.</div>`;
-  const sb_=$('#admShowOpen');
-  if(sb_) sb_.onclick=()=>{ admFilter='default'; $('#admFilter').value='default'; renderAdmin(); };
 
   if(!list.length){
     $('#admRows').innerHTML=`<tr><td colspan="4">
@@ -1661,13 +1554,10 @@ function renderAdmin(){
           >${esc(u.initials||initialsOf(u.full_name))}</span>
         <span style="min-width:0">
           <div class="nm">${esc(u.full_name||'—')}${u.id===CU.id?' <span class="badge plain">you</span>':''}</div>
-          ${subOf(u)?`<div class="sub">${esc(subOf(u))}</div>`:''}
           <div class="em">${esc(u.email||'')}</div></span>
       </div></td>
       <td>${g?`<span class="badge plain"><span class="gdot" style="background:${g.color}"></span> ${esc(g.name)}</span>`:'<span class="badge plain">All groups</span>'}</td>
-      <td>${roleBadge}${u.is_active===false?' <span class="badge bad">Off</span>':''}${
-        u.is_active!==false && u.must_change_password
-          ? ' <span class="badge warn" title="Still on the shared password">not signed in</span>' : ''}</td>
+      <td>${roleBadge}${u.is_active===false?' <span class="badge bad">Off</span>':''}</td>
       <td><div class="uacts">
         <button class="icon-btn" data-edit="${u.id}" title="Edit"><i class="ti ti-pencil"></i></button>
         <button class="icon-btn" data-pw="${u.id}" title="Reset password"><i class="ti ti-key"></i></button>
@@ -1700,7 +1590,6 @@ function openUserForm(id){
     $('#uEmail').value=u.email||'';
     $('#uJob').value=u.title||'';
     $('#uEmp').value=u.employee_id||'';
-    $('#uBrands').value=u.brands||'';
     $('#uRole').value=u.role;
     $('#uGroup').value=u.group_slug||GROUPS[0]?.slug;
     $('#uEmailField').classList.add('hide');       // email is the login; not editable here
@@ -1708,8 +1597,8 @@ function openUserForm(id){
     $('#uSave').textContent='Save changes';
   } else {
     $('#uTitle').textContent='Add person';
-    ['#uName','#uEmail','#uJob','#uEmp','#uBrands'].forEach(s=>$(s).value='');
-    $('#uPass').value=DEFAULT_PASSWORD;
+    ['#uName','#uEmail','#uJob','#uEmp'].forEach(s=>$(s).value='');
+    $('#uPass').value=genPassword();
     $('#uRole').value='user';
     $('#uGroup').value=GROUPS[0]?.slug;
     $('#uEmailField').classList.remove('hide');
@@ -1733,7 +1622,6 @@ async function saveUser(){
     role,
     title:$('#uJob').value.trim(),
     employee_id:$('#uEmp').value.trim(),
-    brands:$('#uBrands').value.trim(),
   };
   if(!body.full_name){ note('#uMsg','Enter their name.'); return; }
 
@@ -1747,7 +1635,7 @@ async function saveUser(){
       const email=$('#uEmail').value.trim().toLowerCase();
       const pass=$('#uPass').value.trim();
       if(!email){ throw new Error('Enter their email.'); }
-      if(pass.length<MIN_PASSWORD){ throw new Error(`The password needs at least ${MIN_PASSWORD} characters.`); }
+      if(pass.length<8){ throw new Error('The password needs at least 8 characters.'); }
       await adminCall('create_user', { ...body, email, password:pass });
       $('#uCred').classList.remove('hide');
       $('#uCred').innerHTML=`
@@ -1772,103 +1660,11 @@ async function saveUser(){
   $('#uSave').disabled=false;
 }
 
-/* ---------- one-click team import -------------------------------------
-   Accounts need real auth records, so they can't be seeded with SQL.
-   This walks the roster and calls the same Edge Function the Add person
-   form uses, one at a time, then hands back the generated passwords. */
-let impResults=[];
-
-function openImport(){
-  impResults=[];
-  const have=new Set(USERS.map(u=>(u.email||'').toLowerCase()));
-  const todo=ROSTER.filter(p=>!have.has(p.e));
-  $('#impCount').textContent=`${todo.length} to add`;
-  $('#impIntro').textContent = todo.length
-    ? `Everyone starts on the password ${DEFAULT_PASSWORD} and must change it the first time they sign in. Get them signed in soon — until they do, the account can be guessed.`
-    : 'Everyone on the sheet already has an account.';
-  note('#impMsg','');
-  $('#impBar').classList.add('hide');
-  $('#impBar').querySelector('i').style.width='0';
-  $('#impCsv').classList.add('hide');
-  $('#impCreds').innerHTML='';
-  $('#impRun').classList.toggle('hide', !todo.length);
-  $('#impRun').disabled=false;
-  $('#impRun').textContent=`Create ${todo.length} account${todo.length===1?'':'s'}`;
-
-  $('#impList').innerHTML=ROSTER.map(p=>{
-    const done=have.has(p.e);
-    const g=p.g?groupName(p.g):'No group';
-    const role=p.r==='super_admin'?'Super admin':p.r==='group_admin'?'Group manager':'Marketer';
-    return `<div class="imp-row" data-imp="${esc(p.e)}">
-      <div class="nm"><b>${esc(p.n)}</b>
-        <span>${esc(role)} · ${esc(g)}${p.b?' · '+esc(p.b):''}</span></div>
-      <div class="imp-st ${done?'skip':''}">${done?'already here':'ready'}</div>
-    </div>`;
-  }).join('');
-  open$('#impScrim');
-}
-
-async function runImport(){
-  const have=new Set(USERS.map(u=>(u.email||'').toLowerCase()));
-  const todo=ROSTER.filter(p=>!have.has(p.e));
-  $('#impRun').disabled=true;
-  $('#impBar').classList.remove('hide');
-  note('#impMsg','');
-
-  let done=0, failed=0;
-  for(const p of todo){
-    const row=$(`[data-imp="${p.e}"] .imp-st`);
-    if(row){ row.className='imp-st'; row.textContent='adding…'; }
-    const password=DEFAULT_PASSWORD;
-    try{
-      await adminCall('create_user', {
-        email:p.e, password, full_name:p.n, role:p.r,
-        group_slug:p.g, title:p.t||'', brands:p.b||'',
-      });
-      impResults.push({ name:p.n, email:p.e, password });
-      if(row){ row.className='imp-st ok'; row.textContent='added'; }
-    }catch(err){
-      const msg=String(err.message||'');
-      const dup=/already|registered|exists/i.test(msg);
-      if(row){ row.className='imp-st '+(dup?'skip':'bad');
-               row.textContent=dup?'already here':'failed';
-               row.title=msg; }
-      if(!dup) failed++;
-    }
-    done++;
-    $('#impBar').querySelector('i').style.width=Math.round(done/todo.length*100)+'%';
-  }
-
-  await loadUsers(); renderAdmin(); renderSidebar();
-
-  $('#impRun').classList.add('hide');
-  if(impResults.length){
-    $('#impCsv').classList.remove('hide');
-    $('#impCreds').innerHTML=`<div class="credbox">
-      <div style="font-weight:700;margin-bottom:6px">${impResults.length} account${impResults.length===1?'':'s'} created</div>
-      <p class="hint" style="margin:0">Everyone signs in with <b>${DEFAULT_PASSWORD}</b> and is made to change it
-      straight away. Manage people shows who still hasn't.</p></div>`;
-  }
-  if(failed) note('#impMsg', `${failed} could not be created. Hover a red row to see why.`);
-  else if(impResults.length) toast(`${impResults.length} accounts created`);
-}
-
-function downloadCreds(){
-  const rows=[['Name','Email','Temporary password'],
-              ...impResults.map(r=>[r.name,r.email,r.password])];
-  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
-  const url=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
-  const a=document.createElement('a');
-  a.href=url; a.download='nerhadou-calendar-logins.csv';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-}
-
 function openResetPw(id){
   editingUser=id;
   const u=USERS.find(x=>x.id===id);
   $('#rpWho').textContent=`A new temporary password for ${u.full_name||u.email}.`;
-  $('#rpPass').value=DEFAULT_PASSWORD;
+  $('#rpPass').value=genPassword();
   note('#rpMsg',''); $('#rpCred').classList.add('hide');
   $('#rpSave').textContent='Reset it';
   $('#rpSave').onclick=doResetPw;
@@ -1876,7 +1672,7 @@ function openResetPw(id){
 }
 async function doResetPw(){
   const pass=$('#rpPass').value.trim();
-  if(pass.length<MIN_PASSWORD){ note('#rpMsg',`At least ${MIN_PASSWORD} characters.`); return; }
+  if(pass.length<8){ note('#rpMsg','At least 8 characters.'); return; }
   const u=USERS.find(x=>x.id===editingUser);
   $('#rpSave').disabled=true;
   try{
@@ -2019,9 +1815,6 @@ function wire(){
 
   // admin
   $('#admNew').onclick=()=>openUserForm(null);
-  $('#admImport').onclick=openImport;
-  $('#impRun').onclick=runImport;
-  $('#impCsv').onclick=downloadCreds;
   $('#admSearch').oninput=e=>{ admQuery=e.target.value.trim(); renderAdmin(); };
   $('#admFilter').onchange=e=>{ admFilter=e.target.value; renderAdmin(); };
   $('#uSave').onclick=saveUser;
