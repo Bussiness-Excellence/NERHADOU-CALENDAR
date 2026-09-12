@@ -1,0 +1,16 @@
+# Secrets — the service role key must never reach a commit.
+# Once pushed it stays in the history forever and has to be rotated.
+.env
+.env.*
+*.key
+
+# Supabase CLI scratch
+supabase/.temp/
+supabase/.branches/
+supabase/logs/
+
+# Local
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
