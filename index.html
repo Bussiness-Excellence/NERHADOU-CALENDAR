@@ -713,7 +713,7 @@ select.inp{cursor:pointer;appearance:none;
       <div id="pwMsg"></div>
       <label class="field"><span>New password</span>
         <input id="pw1" class="inp" type="password" autocomplete="new-password"
-               placeholder="At least 8 characters"></label>
+               placeholder="At least 6 characters"></label>
       <label class="field"><span>Type it again</span>
         <input id="pw2" class="inp" type="password" autocomplete="new-password"></label>
     </div>
@@ -754,6 +754,7 @@ select.inp{cursor:pointer;appearance:none;
       <button class="icon-btn" data-close="admScrim"><i class="ti ti-x"></i></button>
     </div>
     <div class="modal-b" style="padding-top:12px">
+      <div id="admWarn"></div>
       <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
         <input id="admSearch" class="inp" placeholder="Search name or email" style="flex:1;min-width:180px">
         <select id="admFilter" class="inp" style="width:160px"></select>
@@ -776,10 +777,11 @@ select.inp{cursor:pointer;appearance:none;
         <input id="uEmail" class="inp" type="email" placeholder="ahmed.hassan@nerhadou.com"></label>
       <div class="field" id="uPassField"><span>Temporary password</span>
         <div style="display:flex;gap:7px">
-          <input id="uPass" class="inp" style="flex:1" placeholder="At least 8 characters">
+          <input id="uPass" class="inp" style="flex:1" placeholder="At least 6 characters">
           <button class="btn" id="uGen" type="button"><i class="ti ti-refresh"></i> Generate</button>
         </div>
-        <p class="hint">They'll be asked to change it the first time they sign in.</p>
+        <p class="hint">They must change this the first time they sign in. Generate a unique one
+          instead if the account will sit unused for a while.</p>
       </div>
       <div class="row-2">
         <label class="field"><span>Role</span><select id="uRole" class="inp">
@@ -837,7 +839,7 @@ select.inp{cursor:pointer;appearance:none;
       <div id="rpMsg"></div>
       <div class="field"><span>New temporary password</span>
         <div style="display:flex;gap:7px">
-          <input id="rpPass" class="inp" style="flex:1" placeholder="At least 8 characters">
+          <input id="rpPass" class="inp" style="flex:1" placeholder="At least 6 characters">
           <button class="btn" id="rpGen" type="button"><i class="ti ti-refresh"></i> Generate</button>
         </div>
       </div>
@@ -903,6 +905,12 @@ const ROSTER = [
   {n:"Amir Rezk", e:"amir.rezk@nerhadou.com", t:"Associate PM", b:"NOPYRETRON", r:"user", g:"g4"},
   {n:"Sherry Boushra", e:"sherry_boushra@nerhadou.com", t:"Senior PM", b:"ONDALENZ 4 mg", r:"user", g:"g4"},
 ];
+
+/* Everyone starts on this and is forced to change it at first sign-in.
+   Until they do, the account is guessable — Manage people flags who is
+   still on it so they can be chased. */
+const DEFAULT_PASSWORD = '123456';
+const MIN_PASSWORD = 6;
 
 const ROLE_LABEL = { super_admin:'Super admin', group_admin:'Group manager', user:'Marketer' };
 const VIS_LABEL  = { private:'Just me', group:'My group', company:'Everyone' };
@@ -1550,7 +1558,7 @@ async function sendBack(){
    ==================================================================== */
 function forcePasswordChange(){
   $('#pwTitle').textContent='Choose a password';
-  $('#pwIntro').textContent='You are signed in with a temporary password. Pick your own before you carry on.';
+  $('#pwIntro').textContent='You are signed in with the shared starting password. Pick your own before you carry on — until you do, anyone could sign in as you.';
   $('#pwClose').classList.add('hide');
   $('#pwCancel').classList.add('hide');
   note('#pwMsg',''); $('#pw1').value=''; $('#pw2').value='';
@@ -1566,7 +1574,8 @@ function openPasswordChange(){
 }
 async function savePassword(){
   const a=$('#pw1').value, b=$('#pw2').value;
-  if(a.length<8){ note('#pwMsg','Use at least 8 characters.'); return; }
+  if(a.length<MIN_PASSWORD){ note('#pwMsg',`Use at least ${MIN_PASSWORD} characters.`); return; }
+  if(a===DEFAULT_PASSWORD){ note('#pwMsg','That is the shared starting password. Choose something only you know.'); return; }
   if(a!==b){ note('#pwMsg','The two passwords don\'t match.'); return; }
   $('#pwSave').disabled=true;
   const { error } = await sb.auth.updateUser({ password:a });
@@ -1600,6 +1609,7 @@ function openAdmin(){
   $('#admSearch').value='';
   $('#admFilter').innerHTML=`<option value="all">Everyone</option>`+
     GROUPS.map(g=>`<option value="${g.slug}">${esc(g.name)}</option>`).join('')+
+    `<option value="default">Still on the shared password</option>`+
     `<option value="inactive">Deactivated</option>`;
   renderAdmin();
   open$('#admScrim');
@@ -1612,12 +1622,26 @@ function renderAdmin(){
     list=list.filter(u=>u.is_active!==false);
     if(admFilter!=='all') list=list.filter(u=>u.group_slug===admFilter);
   }
+  if(admFilter==='default') list=USERS.filter(u=>u.is_active!==false && u.must_change_password);
   if(admQuery){
     const q=admQuery.toLowerCase();
     list=list.filter(u=>(u.full_name||'').toLowerCase().includes(q)
                      || (u.email||'').toLowerCase().includes(q));
   }
   $('#admCount').textContent=list.length;
+
+  // Accounts still on the shared password are the ones anyone could guess.
+  const open_=USERS.filter(u=>u.is_active!==false && u.must_change_password);
+  $('#admWarn').innerHTML = open_.length
+    ? `<div class="msg err" style="display:flex;align-items:center;gap:9px">
+         <i class="ti ti-alert-triangle" style="font-size:17px;flex:none"></i>
+         <span style="flex:1"><b>${open_.length} ${open_.length===1?'account is':'accounts are'} still on ${DEFAULT_PASSWORD}.</b>
+         Anyone who guesses the email can sign in as them. Chase them to sign in and set their own.</span>
+         <button class="btn btn-sm" id="admShowOpen">Show them</button>
+       </div>`
+    : `<div class="msg good">Everyone has set their own password.</div>`;
+  const sb_=$('#admShowOpen');
+  if(sb_) sb_.onclick=()=>{ admFilter='default'; $('#admFilter').value='default'; renderAdmin(); };
 
   if(!list.length){
     $('#admRows').innerHTML=`<tr><td colspan="4">
@@ -1641,7 +1665,9 @@ function renderAdmin(){
           <div class="em">${esc(u.email||'')}</div></span>
       </div></td>
       <td>${g?`<span class="badge plain"><span class="gdot" style="background:${g.color}"></span> ${esc(g.name)}</span>`:'<span class="badge plain">All groups</span>'}</td>
-      <td>${roleBadge}${u.is_active===false?' <span class="badge bad">Off</span>':''}</td>
+      <td>${roleBadge}${u.is_active===false?' <span class="badge bad">Off</span>':''}${
+        u.is_active!==false && u.must_change_password
+          ? ' <span class="badge warn" title="Still on the shared password">not signed in</span>' : ''}</td>
       <td><div class="uacts">
         <button class="icon-btn" data-edit="${u.id}" title="Edit"><i class="ti ti-pencil"></i></button>
         <button class="icon-btn" data-pw="${u.id}" title="Reset password"><i class="ti ti-key"></i></button>
@@ -1683,7 +1709,7 @@ function openUserForm(id){
   } else {
     $('#uTitle').textContent='Add person';
     ['#uName','#uEmail','#uJob','#uEmp','#uBrands'].forEach(s=>$(s).value='');
-    $('#uPass').value=genPassword();
+    $('#uPass').value=DEFAULT_PASSWORD;
     $('#uRole').value='user';
     $('#uGroup').value=GROUPS[0]?.slug;
     $('#uEmailField').classList.remove('hide');
@@ -1721,7 +1747,7 @@ async function saveUser(){
       const email=$('#uEmail').value.trim().toLowerCase();
       const pass=$('#uPass').value.trim();
       if(!email){ throw new Error('Enter their email.'); }
-      if(pass.length<8){ throw new Error('The password needs at least 8 characters.'); }
+      if(pass.length<MIN_PASSWORD){ throw new Error(`The password needs at least ${MIN_PASSWORD} characters.`); }
       await adminCall('create_user', { ...body, email, password:pass });
       $('#uCred').classList.remove('hide');
       $('#uCred').innerHTML=`
@@ -1758,7 +1784,7 @@ function openImport(){
   const todo=ROSTER.filter(p=>!have.has(p.e));
   $('#impCount').textContent=`${todo.length} to add`;
   $('#impIntro').textContent = todo.length
-    ? 'Each person gets a generated password. Nothing is emailed — you download the list at the end and hand them out.'
+    ? `Everyone starts on the password ${DEFAULT_PASSWORD} and must change it the first time they sign in. Get them signed in soon — until they do, the account can be guessed.`
     : 'Everyone on the sheet already has an account.';
   note('#impMsg','');
   $('#impBar').classList.add('hide');
@@ -1793,7 +1819,7 @@ async function runImport(){
   for(const p of todo){
     const row=$(`[data-imp="${p.e}"] .imp-st`);
     if(row){ row.className='imp-st'; row.textContent='adding…'; }
-    const password=genPassword();
+    const password=DEFAULT_PASSWORD;
     try{
       await adminCall('create_user', {
         email:p.e, password, full_name:p.n, role:p.r,
@@ -1820,8 +1846,8 @@ async function runImport(){
     $('#impCsv').classList.remove('hide');
     $('#impCreds').innerHTML=`<div class="credbox">
       <div style="font-weight:700;margin-bottom:6px">${impResults.length} account${impResults.length===1?'':'s'} created</div>
-      <p class="hint" style="margin:0">Download the list now — the passwords are not stored anywhere and
-      cannot be shown again. Everyone is asked to change theirs when they first sign in.</p></div>`;
+      <p class="hint" style="margin:0">Everyone signs in with <b>${DEFAULT_PASSWORD}</b> and is made to change it
+      straight away. Manage people shows who still hasn't.</p></div>`;
   }
   if(failed) note('#impMsg', `${failed} could not be created. Hover a red row to see why.`);
   else if(impResults.length) toast(`${impResults.length} accounts created`);
@@ -1842,7 +1868,7 @@ function openResetPw(id){
   editingUser=id;
   const u=USERS.find(x=>x.id===id);
   $('#rpWho').textContent=`A new temporary password for ${u.full_name||u.email}.`;
-  $('#rpPass').value=genPassword();
+  $('#rpPass').value=DEFAULT_PASSWORD;
   note('#rpMsg',''); $('#rpCred').classList.add('hide');
   $('#rpSave').textContent='Reset it';
   $('#rpSave').onclick=doResetPw;
@@ -1850,7 +1876,7 @@ function openResetPw(id){
 }
 async function doResetPw(){
   const pass=$('#rpPass').value.trim();
-  if(pass.length<8){ note('#rpMsg','At least 8 characters.'); return; }
+  if(pass.length<MIN_PASSWORD){ note('#rpMsg',`At least ${MIN_PASSWORD} characters.`); return; }
   const u=USERS.find(x=>x.id===editingUser);
   $('#rpSave').disabled=true;
   try{
