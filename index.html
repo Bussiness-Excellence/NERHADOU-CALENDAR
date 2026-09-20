@@ -4,10 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Nerhadou Marketing Calendar</title>
+<meta name="theme-color" id="metaTheme" content="#FFFFFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script>
+/* Set the theme before anything paints, so night mode never flashes white. */
+(function(){try{
+  var t=localStorage.getItem('nrh_theme');
+  if(!t) t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  document.documentElement.setAttribute('data-theme',t);
+}catch(e){}})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.2.0/tabler-icons.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.2.0/dist/tabler-icons.min.css" rel="stylesheet">
 <style>
 /* ==================================================================
    Palette is pulled from the logo: #0B4D89, the blue of the mark.
@@ -55,6 +65,9 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
+:root{color-scheme:light}
+[data-theme="dark"]{color-scheme:dark}   /* dark date pickers, scrollbars, form controls */
+html{-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
   font-family:var(--sans);background:var(--bg);color:var(--t1);
@@ -133,7 +146,7 @@ select.inp{cursor:pointer;appearance:none;
 /* ---------- chips / badges ---------- */
 .badge{
   display:inline-flex;align-items:center;gap:4px;height:21px;padding:0 8px;
-  border-radius:5px;font-size:11.5px;font-weight:600;letter-spacing:.01em;
+  border-radius:5px;font-size:11.5px;font-weight:600;letter-spacing:.01em;white-space:nowrap;
 }
 .badge.ok{background:var(--ok-bg);color:var(--ok)}
 .badge.warn{background:var(--warn-bg);color:var(--warn)}
@@ -207,7 +220,7 @@ select.inp{cursor:pointer;appearance:none;
 .navdate{display:flex;align-items:center;gap:2px}
 .navdate .lbl{
   min-width:158px;text-align:center;font-size:15px;
-  font-weight:700;letter-spacing:-.015em;
+  font-weight:700;letter-spacing:-.015em;cursor:pointer;border-radius:6px;
 }
 
 .umenu{position:relative}
@@ -478,6 +491,13 @@ select.inp{cursor:pointer;appearance:none;
 .imp-bar{height:5px;border-radius:3px;background:var(--surf-3);overflow:hidden;margin-bottom:12px}
 .imp-bar i{display:block;height:100%;background:var(--brand);width:0;transition:width .2s}
 .uacts{display:flex;gap:4px;justify-content:flex-end}
+.seen{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--t2);white-space:nowrap}
+.seen .d{width:7px;height:7px;border-radius:50%;background:var(--tm);flex:none}
+.seen.now .d{background:#22C55E}
+.seen.recent .d{background:var(--ok)}
+.seen.stale{color:var(--warn)} .seen.stale .d{background:var(--warn)}
+.seen.never{color:var(--bad)} .seen.never .d{background:transparent;box-shadow:inset 0 0 0 1.5px var(--bad)}
+.seen small{display:block;color:var(--tm);font-size:11px}
 .inactive td{opacity:.5}
 
 .credbox{
@@ -536,12 +556,126 @@ select.inp{cursor:pointer;appearance:none;
   .row-2{grid-template-columns:1fr}
   .auth-card{padding:28px 22px 24px}
 }
+
+/* ================= NIGHT MODE ================= */
+body{transition:background .2s,color .2s}
+[data-theme="dark"] .scrim{background:rgba(0,0,0,.68)}
+[data-theme="dark"] .drawer-scrim.on{background:rgba(0,0,0,.55)}
+[data-theme="dark"] #auth::before{opacity:.08}
+[data-theme="dark"] .cell.out{background:#0B131D}
+[data-theme="dark"] .pill{border-left-color:rgba(0,0,0,.35)}
+.auth-theme{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;z-index:2}
+.sw-track{margin-left:auto;width:36px;height:21px;border-radius:11px;background:var(--bd-2);
+  position:relative;transition:background .15s;flex:none}
+.sw-track::after{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;
+  border-radius:50%;background:#fff;box-shadow:var(--sh-1);transition:transform .15s}
+[data-theme="dark"] .sw-track{background:var(--brand)}
+[data-theme="dark"] .sw-track::after{transform:translateX(15px)}
+
+/* ================= PHONE ================= */
+.tb-break,.fab,.magenda,.dots{display:none}
+@media (hover:none){ .tip{display:none!important} }
+
+@media(max-width:640px){
+  body{font-size:15px}
+  /* 16px stops iOS zooming into inputs */
+  .inp,textarea.inp,select.inp{font-size:16px}
+  .inp{height:44px}
+  .btn{height:42px}
+  .btn-sm{height:36px}
+  .icon-btn{width:40px;height:40px}
+
+  /* top bar: two rows — brand + actions, then date + views */
+  .topbar{height:auto;flex-wrap:wrap;row-gap:4px;
+    padding:calc(6px + env(safe-area-inset-top,0px)) 6px 8px}
+  .tb-break{display:block;order:9;flex-basis:100%;height:0}
+  .brand-lock .logo{width:86px;height:22px}
+  .navdate{order:10;flex:1;min-width:0}
+  .navdate .lbl{min-width:0;flex:1;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #btnToday{display:none}
+  .seg{order:12}
+  .seg button{padding:0 9px;height:30px}
+  #btnNew{display:none}
+
+  /* drawers go full height on phones */
+  .side,.panel{top:0;padding-top:env(safe-area-inset-top,0px);z-index:60;
+    width:86vw;max-width:320px}
+  .drawer-scrim.on{inset:0;z-index:55}
+
+  .filterbar{height:40px;padding:0 10px}
+  .canvas{padding:8px 8px calc(96px + env(safe-area-inset-bottom,0px))}
+
+  /* month: dots in the grid, the day's events listed underneath */
+  .mgrid{grid-template-rows:auto;grid-auto-rows:58px;min-height:0;border-radius:12px}
+  .dow{padding:6px 0;text-align:center;font-size:11px}
+  .cell{padding:4px 2px;align-items:center;gap:4px}
+  .dhead{justify-content:center;min-height:22px}
+  .dnum{font-size:13.5px}
+  .cell .pill,.cell .more{display:none}
+  .cell .dots{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;max-width:100%}
+  .dots span{width:6px;height:6px;border-radius:50%}
+  .dots span.p{background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--warn)}
+  .cell.sel{box-shadow:inset 0 0 0 2px var(--brand);background:var(--brand-050)}
+  .magenda{display:block;margin-top:14px}
+  .magenda .psec-h{font-size:13px;color:var(--t2);padding:0 2px}
+  .magenda .dev{padding:12px}
+
+  /* week: scroll sideways instead of squashing seven columns */
+  .wwrap{min-width:700px}
+
+  .lrow{padding:12px 6px}
+
+  /* add button always under the thumb */
+  .fab{display:flex;position:fixed;right:16px;z-index:25;
+    bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    width:58px;height:58px;border-radius:50%;background:var(--brand);color:#fff;
+    align-items:center;justify-content:center;box-shadow:var(--sh-3)}
+  [data-theme="dark"] .fab{color:#06131F}
+  .fab i{font-size:27px}
+  .hide-mobile{display:none!important}
+
+  /* modals become bottom sheets */
+  .scrim{align-items:flex-end;padding:0}
+  .modal,.modal.wide{max-width:100%!important;width:100%;max-height:94dvh;
+    border-radius:18px 18px 0 0;border-bottom:0}
+  .modal-h{flex-wrap:wrap;row-gap:8px;padding:14px 14px 12px}
+  .modal-h > .spacer{display:none}
+  .modal-h > [data-close]{order:2;margin-left:auto}
+  .modal-h > .btn{order:3;flex:1 1 40%}
+  .modal-b{padding:14px}
+  .modal-f{padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));flex-wrap:wrap}
+  .modal-f .spacer{display:none}
+  .modal-f .btn{flex:1 1 40%}
+  .optrow .opt{padding:12px 6px}
+  .sw{width:32px;height:32px}
+
+  /* user menu as a bottom sheet */
+  .umenu-pop{position:fixed;left:8px;right:8px;top:auto;width:auto;
+    bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+  .mi{padding:12px 10px;font-size:15px}
+
+  /* people table becomes cards */
+  .utable,.utable tbody{display:block}
+  .utable tr{display:grid;grid-template-columns:auto 1fr;gap:8px;
+    padding:13px 2px;border-bottom:1px solid var(--bd)}
+  .utable td{display:block;padding:0;border:0}
+  .utable tr:hover td{background:none}
+  .utable td:nth-child(1),.utable td:nth-child(4),.utable td:nth-child(5),.utable td[colspan]{grid-column:1/-1}
+  .uacts{justify-content:flex-start;gap:6px}
+  .uacts .icon-btn{background:var(--surf-3)}
+  .uname .nm,.uname .em,.uname .sub{white-space:normal}
+  #admFilter{width:100%!important}
+
+  .toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+  .auth-card{padding:26px 20px 22px}
+}
 </style>
 </head>
 <body>
 
 <!-- ================= AUTH ================= -->
 <div id="auth">
+  <button class="icon-btn auth-theme" id="btnThemeAuth" title="Night mode"><i class="ti ti-moon"></i></button>
   <div class="auth-card">
     <div class="logo auth-mark"></div>
     <div class="auth-rule"></div>
@@ -573,6 +707,7 @@ select.inp{cursor:pointer;appearance:none;
     </div>
     <div class="spacer"></div>
 
+    <div class="tb-break"></div>
     <div class="navdate">
       <button class="icon-btn" id="btnPrev"><i class="ti ti-chevron-left"></i></button>
       <div class="lbl tnum" id="periodLabel">—</div>
@@ -587,7 +722,7 @@ select.inp{cursor:pointer;appearance:none;
     </div>
 
     <button class="btn btn-pri" id="btnNew"><i class="ti ti-plus"></i><span class="ndl">New event</span></button>
-    <button class="icon-btn" id="btnTheme"><i class="ti ti-moon"></i></button>
+    <button class="icon-btn" id="btnTheme" title="Night mode"><i class="ti ti-moon"></i></button>
     <button class="icon-btn" id="btnPanel" style="display:none"><i class="ti ti-layout-sidebar-right"></i></button>
 
     <div class="umenu">
@@ -602,6 +737,7 @@ select.inp{cursor:pointer;appearance:none;
           </div>
         </div>
         <button class="mi" id="miAdmin"><i class="ti ti-users-group"></i> Manage people</button>
+        <button class="mi" id="miTheme"><i class="ti ti-moon-stars"></i> Night mode <span class="sw-track"></span></button>
         <button class="mi" id="miPass"><i class="ti ti-key"></i> Change password</button>
         <button class="mi danger" id="miOut"><i class="ti ti-logout"></i> Sign out</button>
       </div>
@@ -654,6 +790,8 @@ select.inp{cursor:pointer;appearance:none;
     </aside>
   </div>
 </div>
+
+<button class="fab hide" id="btnFab" title="New event"><i class="ti ti-plus"></i></button>
 
 <!-- ================= EVENT MODAL ================= -->
 <div class="scrim hide" id="evScrim">
@@ -931,6 +1069,7 @@ let onlineSet=new Set(), openGroups=new Set();
 let editingId=null, evVis='private', evColor=EVT_HEX[0];
 let rejectId=null, editingUser=null, admQuery='', admFilter='all';
 let presenceCh=null, dataCh=null;
+let LAST_LOGIN=null;                 // id -> ISO time, loaded for super admins only
 
 /* ---------- helpers ---------- */
 const $  = s => document.querySelector(s);
@@ -953,6 +1092,41 @@ function fmtTime(t){
 function initialsOf(n){
   const p=String(n||'').trim().split(/\s+/);
   return ((p[0]?.[0]||'')+(p[1]?.[0]||'')).toUpperCase()||'··';
+}
+function timeAgo(iso){
+  const s=Math.max(0,(Date.now()-new Date(iso).getTime())/1000);
+  if(s<60) return 'just now';
+  const m=s/60; if(m<60) return `${Math.floor(m)} min ago`;
+  const h=m/60; if(h<24) return `${Math.floor(h)} h ago`;
+  const d=h/24; if(d<2) return 'yesterday';
+  if(d<30) return `${Math.floor(d)} days ago`;
+  const mo=d/30; if(mo<12) return `${Math.floor(mo)} month${mo>=2?'s':''} ago`;
+  return 'over a year ago';
+}
+function fmtStamp(iso){
+  const d=new Date(iso);
+  return `${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)} ${d.getFullYear()}, ${
+    fmtTime(`${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`)}`;
+}
+function seenHtml(u){
+  if(!LAST_LOGIN) return '<span class="seen"><span class="d"></span>…</span>';
+  if(onlineSet.has(u.email)) return '<span class="seen now"><span class="d"></span>Online now</span>';
+  const t=LAST_LOGIN[u.id];
+  if(!t) return '<span class="seen never" title="Has never signed in"><span class="d"></span>Never</span>';
+  const days=(Date.now()-new Date(t).getTime())/864e5;
+  const cls = days<=7 ? 'recent' : days>30 ? 'stale' : '';
+  return `<span class="seen ${cls}" title="${fmtStamp(t)}"><span class="d"></span>
+    <span>${timeAgo(t)}<small>${fmtStamp(t)}</small></span></span>`;
+}
+async function loadLastLogins(){
+  try{
+    const out=await adminCall('last_logins', {});
+    LAST_LOGIN=out.logins||{};
+  }catch(err){
+    LAST_LOGIN={};
+    toast('Could not load sign-in times. '+err.message, true);
+  }
+  if(!$('#admScrim').classList.contains('hide')) renderAdmin();
 }
 function groupOf(slug){ return GROUPS.find(g=>g.slug===slug); }
 /* Brands are what people actually recognise each other by; fall back to
@@ -1039,6 +1213,7 @@ async function start(user){
 
   $('#auth').classList.add('hide');
   $('#app').classList.remove('hide');
+  $('#btnFab').classList.remove('hide');
   paintIdentity();
 
   await Promise.all([loadGroups(), loadUsers()]);
@@ -1204,14 +1379,15 @@ function renderView(){
 
 function renderPeriodLabel(){
   const el=$('#periodLabel');
-  if(curView==='month') el.textContent=`${MONTHS[cursor.getMonth()]} ${cursor.getFullYear()}`;
+  const mName=m=> innerWidth<=640 ? MONTHS[m].slice(0,3) : MONTHS[m];
+  if(curView==='month') el.textContent=`${mName(cursor.getMonth())} ${cursor.getFullYear()}`;
   else if(curView==='week'){
     const s=weekStart(cursor), e=new Date(s); e.setDate(s.getDate()+6);
     const sm=MONTHS[s.getMonth()].slice(0,3), em=MONTHS[e.getMonth()].slice(0,3);
     el.textContent = s.getMonth()===e.getMonth()
       ? `${sm} ${s.getDate()}–${e.getDate()}`
       : `${sm} ${s.getDate()} – ${em} ${e.getDate()}`;
-  } else el.textContent=`${MONTHS[cursor.getMonth()]} ${cursor.getFullYear()}`;
+  } else el.textContent=`${mName(cursor.getMonth())} ${cursor.getFullYear()}`;
 }
 
 function weekStart(d){ const s=new Date(d); s.setDate(d.getDate()-d.getDay()); s.setHours(0,0,0,0); return s; }
@@ -1241,12 +1417,22 @@ function renderMonth(){
     html+=`<div class="cell ${out?'out':''} ${ds===today?'today':''} ${ds===selDate?'sel':''}"
              data-day="${ds}">
       <div class="dhead"><span class="dnum tnum">${d.getDate()}</span></div>
+      ${evs.length?`<div class="dots">${evs.slice(0,4).map(e=>
+        `<span class="${e.status==='pending'?'p':''}" style="background:${e.color||groupColor(e.group_slug)}"></span>`).join('')}</div>`:''}
       ${shown.map(pillHtml).join('')}
       ${extra>0?`<div class="more">+${extra} more</div>`:''}
     </div>`;
   }
+  // phone only (CSS hides it on wide screens): the selected day's events
+  const ad=selDate||today, add=parseDate(ad), dayEvs=eventsOn(ad);
+  const agenda=`<div class="magenda">
+    <div class="psec-h"><span>${ad===today?'Today':`${DOW[add.getDay()]} ${add.getDate()} ${MONTHS[add.getMonth()].slice(0,3)}`}</span>
+      <span>${dayEvs.length||''}</span></div>
+    ${dayEvs.length?dayEvs.map(devHtml).join('')
+      :'<div class="side-empty">Nothing scheduled. Tap + to add something.</div>'}</div>`;
+
   const c=$('#canvas');
-  c.innerHTML=`<div class="mgrid">${html}</div>`;
+  c.innerHTML=`<div class="mgrid">${html}</div>${agenda}`;
   wireCells(c);
 }
 
@@ -1612,9 +1798,14 @@ function openAdmin(){
   $('#admFilter').innerHTML=`<option value="all">Everyone</option>`+
     GROUPS.map(g=>`<option value="${g.slug}">${esc(g.name)}</option>`).join('')+
     `<option value="default">Still on the shared password</option>`+
+    `<option value="never">Never signed in</option>`+
+    `<option value="stale">Not seen for 30+ days</option>`+
+    `<option value="recent">Sorted by last sign-in</option>`+
     `<option value="inactive">Deactivated</option>`;
+  LAST_LOGIN=null;
   renderAdmin();
   open$('#admScrim');
+  loadLastLogins();
 }
 
 function renderAdmin(){
@@ -1625,6 +1816,14 @@ function renderAdmin(){
     if(admFilter!=='all') list=list.filter(u=>u.group_slug===admFilter);
   }
   if(admFilter==='default') list=USERS.filter(u=>u.is_active!==false && u.must_change_password);
+  const seenAt=u=>LAST_LOGIN?.[u.id] ? new Date(LAST_LOGIN[u.id]).getTime() : 0;
+  if(['never','stale','recent'].includes(admFilter)){
+    list=USERS.filter(u=>u.is_active!==false);
+    if(admFilter==='never') list=list.filter(u=>LAST_LOGIN && !LAST_LOGIN[u.id]);
+    if(admFilter==='stale') list=list.filter(u=>LAST_LOGIN && LAST_LOGIN[u.id] &&
+                                        Date.now()-seenAt(u) > 30*864e5);
+    if(admFilter==='recent') list.sort((a,b)=>seenAt(b)-seenAt(a));
+  }
   if(admQuery){
     const q=admQuery.toLowerCase();
     list=list.filter(u=>(u.full_name||'').toLowerCase().includes(q)
@@ -1646,13 +1845,14 @@ function renderAdmin(){
   if(sb_) sb_.onclick=()=>{ admFilter='default'; $('#admFilter').value='default'; renderAdmin(); };
 
   if(!list.length){
-    $('#admRows').innerHTML=`<tr><td colspan="4">
+    $('#admRows').innerHTML=`<tr><td colspan="5">
       <div class="empty" style="padding:30px"><i class="ti ti-user-search"></i>
       <p>Nobody matches that. Try a different search, or add someone new.</p></div></td></tr>`;
     return;
   }
 
-  $('#admRows').innerHTML=list.map(u=>{
+  const head=`<tr class="hide-mobile"><th>Person</th><th>Group</th><th>Role</th><th>Last sign-in</th><th></th></tr>`;
+  $('#admRows').innerHTML=head+list.map(u=>{
     const g=groupOf(u.group_slug);
     const roleBadge = u.role==='super_admin' ? '<span class="badge brand">Super admin</span>'
       : u.role==='group_admin' ? '<span class="badge ok">Group manager</span>'
@@ -1669,7 +1869,8 @@ function renderAdmin(){
       <td>${g?`<span class="badge plain"><span class="gdot" style="background:${g.color}"></span> ${esc(g.name)}</span>`:'<span class="badge plain">All groups</span>'}</td>
       <td>${roleBadge}${u.is_active===false?' <span class="badge bad">Off</span>':''}${
         u.is_active!==false && u.must_change_password
-          ? ' <span class="badge warn" title="Still on the shared password">not signed in</span>' : ''}</td>
+          ? ' <span class="badge warn" title="Still on the shared password">default password</span>' : ''}</td>
+      <td>${seenHtml(u)}</td>
       <td><div class="uacts">
         <button class="icon-btn" data-edit="${u.id}" title="Edit"><i class="ti ti-pencil"></i></button>
         <button class="icon-btn" data-pw="${u.id}" title="Reset password"><i class="ti ti-key"></i></button>
@@ -1998,6 +2199,7 @@ function subscribe(){
     .on('presence', { event:'sync' }, () => {
       onlineSet = new Set(Object.keys(presenceCh.presenceState()));
       renderSidebar();
+      if(LAST_LOGIN && !$('#admScrim').classList.contains('hide')) renderAdmin();
     })
     .subscribe(async status => {
       if(status==='SUBSCRIBED') await presenceCh.track({ email: CU.email, at: Date.now() });
@@ -2018,11 +2220,16 @@ function closeDrawers(){
   $('#panel').classList.remove('open');
   $('#drawerScrim').classList.remove('on');
 }
-function applyTheme(t){
+function applyTheme(t, remember=true){
   document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('nrh_theme', t);
-  $('#btnTheme').innerHTML = `<i class="ti ti-${t==='dark'?'sun':'moon'}"></i>`;
+  if(remember){ try{ localStorage.setItem('nrh_theme', t); }catch(e){} }
+  const icon=`<i class="ti ti-${t==='dark'?'sun':'moon'}"></i>`;
+  ['#btnTheme','#btnThemeAuth'].forEach(s=>{ const b=$(s); if(b){ b.innerHTML=icon;
+    b.title = t==='dark' ? 'Day mode' : 'Night mode'; } });
+  $('#metaTheme')?.setAttribute('content', t==='dark' ? '#0E1722' : '#FFFFFF');
 }
+const toggleTheme=()=>applyTheme(
+  document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
 
 function wire(){
   // auth
@@ -2034,21 +2241,41 @@ function wire(){
   if(saved){ $('#liEmail').value=saved; $('#liRemember').checked=true; $('#liPass').focus(); }
 
   // theme
-  applyTheme(localStorage.getItem('nrh_theme') ||
-    (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
-  $('#btnTheme').onclick=()=>applyTheme(
-    document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+  // Follow the phone/computer setting until someone picks a mode themselves.
+  const sysDark=matchMedia('(prefers-color-scheme: dark)');
+  let savedTheme=null; try{ savedTheme=localStorage.getItem('nrh_theme'); }catch(e){}
+  applyTheme(savedTheme || (sysDark.matches?'dark':'light'), !!savedTheme);
+  sysDark.addEventListener?.('change', e=>{
+    let s=null; try{ s=localStorage.getItem('nrh_theme'); }catch(_){}
+    if(!s) applyTheme(e.matches?'dark':'light', false);
+  });
+  $('#btnTheme').onclick=toggleTheme;
+  $('#btnThemeAuth').onclick=toggleTheme;
+  $('#miTheme').onclick=toggleTheme;   // menu stays open so the switch is seen moving
 
   // nav
   $('#btnPrev').onclick=()=>shift(-1);
   $('#btnNext').onclick=()=>shift(1);
   $('#btnToday').onclick=()=>{ cursor=new Date(); selDate=localDate(); renderView(); renderPanel(); };
+  $('#periodLabel').onclick=()=>$('#btnToday').onclick();   // tap the month to jump to today
+  $('#periodLabel').title='Back to today';
   $$('#viewSeg button').forEach(b=>b.onclick=()=>{
     curView=b.dataset.v;
     $$('#viewSeg button').forEach(x=>x.classList.toggle('on', x===b));
     renderView();
   });
   $('#btnNew').onclick=()=>openEvent(null, selDate);
+  $('#btnFab').onclick=()=>openEvent(null, selDate);
+
+  // swipe left/right on the month or list to change month
+  let sx=0, sy=0;
+  $('#canvas').addEventListener('touchstart', e=>{
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
+  $('#canvas').addEventListener('touchend', e=>{
+    if(curView==='week') return;             // week scrolls sideways instead
+    const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>70 && Math.abs(dx)>Math.abs(dy)*1.6) shift(dx<0?1:-1);
+  }, {passive:true});
   $('#btnAllGroups').onclick=()=>{ filterGroup=null; filterUser=null; renderAll(); };
 
   // user menu
